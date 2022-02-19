@@ -41,7 +41,7 @@ proc renderNoneFound(): VNode =
 
 proc renderThread(thread: seq[Tweet]; prefs: Prefs; path: string): VNode =
   buildHtml(tdiv(class="thread-line")):
-    let sortedThread = thread.sortedByIt(it.id)
+    let sortedThread = thread.sortedByIt(it.id).reversed
     for i, tweet in sortedThread:
       let show = i == thread.high and sortedThread[0].id != tweet.threadId
       let header = if tweet.pinned or tweet.retweet.isSome: "with-header " else: ""
