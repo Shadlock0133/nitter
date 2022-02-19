@@ -37,3 +37,19 @@
         height: unset;
     }
 }
+
+.favorite-list {
+    @include center-panel(var(--darkest_grey));
+    display: grid;
+
+    .user {
+        vertical-align: middle;
+    }
+
+    // .username, .fullname {
+    // }
+
+    // .avatar.mini {
+    //     vertical-align: baseline;
+    // }
+}

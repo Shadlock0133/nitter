@@ -13,7 +13,7 @@ proc getSmallPic(url: string): string =
     result &= ":small"
   result = getPicUrl(result)
 
-proc renderMiniAvatar(user: User; prefs: Prefs): VNode =
+proc renderMiniAvatar*(user: User; prefs: Prefs): VNode =
   let url = getPicUrl(user.getUserPic("_mini"))
   buildHtml():
     img(class=(prefs.getAvatarClass & " mini"), src=url)
@@ -344,7 +344,10 @@ proc renderTweet*(tweet: Tweet; prefs: Prefs; path: string; class=""; index=0;
         renderQuote(tweet.quote.get(), prefs, path)
 
       if mainTweet:
-        p(class="tweet-published"): text getTime(tweet)
+        tdiv(class="yakuu-tweet-footer"):
+          p(class="tweet-published"): text getTime(tweet)
+          a(class="yakuu-tweet-redirect-link", href=getTwitterRedirectLink(tweet)):
+            text "to Twitter"
 
       if tweet.mediaTags.len > 0:
         renderMediaTags(tweet.mediaTags)

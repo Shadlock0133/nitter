@@ -23,7 +23,7 @@ let
   # wasn't first displayed via a post on the Teddit instance.
 
   wwwRegex = re"https?://(www[0-9]?\.)?"
-  m3u8Regex = re"""url="(.+.m3u8)""""
+  m3u8Regex = re"""url="(.+.m3u8)"""
   userPicRegex = re"_(normal|bigger|mini|200x200|400x400)(\.[A-z]+)$"
   extRegex = re"(\.[A-z]+)$"
   illegalXmlRegex = re"(*UTF8)[^\x09\x0A\x0D\x20-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]"
@@ -151,6 +151,13 @@ proc getLink*(tweet: Tweet; focus=true): string =
     username = "i"
   result = &"/{username}/status/{tweet.id}"
   if focus: result &= "#m"
+
+proc getTwitterRedirectLink*(tweet: Tweet; focus=true): string =
+  if tweet.id == 0: return
+  var username = tweet.user.username
+  if username.len == 0:
+    username = "i"
+  result = &"https://twitter.com/{username}/status/{tweet.id}"
 
 proc getTwitterLink*(path: string; params: Table[string, string]): string =
   var

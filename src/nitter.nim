@@ -7,7 +7,7 @@ from os import getEnv
 import jester
 
 import types, config, prefs, formatters, redis_cache, http_pool, tokens
-import views/[general, about]
+import views/[general, about, favorites]
 import routes/[
   preferences, timeline, status, media, search, rss, list, debug,
   unsupported, embed, resolver, router_utils]
@@ -59,7 +59,10 @@ settings:
 
 routes:
   get "/":
-    resp renderMain(renderSearch(), request, cfg, themePrefs())
+    # resp renderMain(renderSearch(), request, cfg, themePrefs())
+    let users = getUsers().await
+    let prefs = themePrefs()
+    resp renderMain(renderFavorites(users, prefs), request, cfg, prefs)
 
   get "/about":
     resp renderMain(renderAbout(), request, cfg, themePrefs())
