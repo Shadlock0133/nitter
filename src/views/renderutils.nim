@@ -84,6 +84,10 @@ proc genImg*(url: string; class=""): VNode =
   buildHtml():
     img(src=getPicUrl(url), class=class, alt="")
 
+proc genImg*(image: Photo; class=""): VNode =
+  buildHtml():
+    img(src=getPicUrl(image.url), class=class, alt=image.altText)
+
 proc getTabClass*(query: Query; tab: QueryKind): string =
   result = "tab-item"
   if query.kind == tab:

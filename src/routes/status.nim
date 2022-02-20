@@ -42,7 +42,7 @@ proc createStatusRouter*(cfg: Config) =
         desc = conv.tweet.text
 
       var
-        images = conv.tweet.photos
+        images = conv.tweet.photos.map(x => x.url)
         video = ""
 
       if conv.tweet.video.isSome():

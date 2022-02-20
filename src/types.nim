@@ -183,7 +183,11 @@ type
     poll*: Option[Poll]
     gif*: Option[Gif]
     video*: Option[Video]
-    photos*: seq[string]
+    photos*: seq[Photo]
+
+  Photo* = object
+    url*: string
+    altText*: string
 
   Result*[T] = object
     content*: seq[T]
