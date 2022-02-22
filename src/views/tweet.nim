@@ -41,6 +41,8 @@ proc renderHeader(tweet: Tweet; retweet: string; prefs: Prefs): VNode =
           linkUser(tweet.user, class="username")
 
         span(class="tweet-date"):
+          a(class="yakuu-tweet-redirect-link", href=getTwitterRedirectLink(tweet)):
+            text "t"
           a(href=getLink(tweet), title=tweet.getTime):
             text tweet.getShortTime
 
@@ -346,10 +348,7 @@ proc renderTweet*(tweet: Tweet; prefs: Prefs; path: string; class=""; index=0;
         renderQuote(tweet.quote.get(), prefs, path)
 
       if mainTweet:
-        tdiv(class="yakuu-tweet-footer"):
-          p(class="tweet-published"): text getTime(tweet)
-          a(class="yakuu-tweet-redirect-link", href=getTwitterRedirectLink(tweet)):
-            text "to Twitter"
+        p(class="tweet-published"): text getTime(tweet)
 
       if tweet.mediaTags.len > 0:
         renderMediaTags(tweet.mediaTags)
