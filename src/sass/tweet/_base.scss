@@ -27,12 +27,6 @@
     }
 }
 
-.tweet-date .yakuu-tweet-redirect-link {
-    margin-right: 5px;
-    color: var(--verified_blue);
-    font-weight: 900;
-}
-
 .tweet-bidi {
     display: block !important;
 }
@@ -83,6 +77,12 @@
     display: flex;
     flex-shrink: 0;
     margin-left: 4px;
+
+    .yakuu-tweet-redirect-link {
+        margin-right: 5px;
+        color: var(--verified_blue);
+        font-weight: 900;
+    }
 }
 
 .tweet-date a, .show-more a {
