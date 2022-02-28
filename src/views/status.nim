@@ -73,3 +73,4 @@ proc renderConversation*(conv: Conversation; prefs: Prefs; path: string): VNode 
         renderReplies(conv.replies, prefs, path)
 
     renderToTop(focus="#m")
+    tdiv(class="yakuu-buffer")
