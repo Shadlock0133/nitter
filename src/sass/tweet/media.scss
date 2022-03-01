@@ -60,6 +60,33 @@
     max-width: 533px;
     justify-content: center;
 
+    .sensitive {
+        filter: blur(30px);
+    }
+
+    // .sensitive::before::before {
+    //     content: "Possibly Sensitive";
+    //     box-sizing: border-box;
+    //     pointer-events: all;
+    //     position: absolute;
+    //     bottom: 5px;
+    //     right: 5px;
+    //     max-height: 27px;
+    //     padding: 5px;
+    //     background: #15121a;
+    //     border-radius: 4px;
+    //     color: #d1d1d1;
+    // }
+
+    // .sensitive:hover::before::before {
+    //     display: none;
+    // }
+
+    .sensitive:hover {
+        filter: none;
+        transition-duration: 0.25s;
+    }
+
     img {
         object-fit: cover;
         max-width: 100%;

@@ -197,7 +197,8 @@ proc parseTweet(js: JsonNode): Tweet =
       retweets: js{"retweet_count"}.getInt,
       likes: js{"favorite_count"}.getInt,
       quotes: js{"quote_count"}.getInt
-    )
+    ),
+    possibly_sensitive: js{"possibly_sensitive"}.getBool
   )
 
   result.expandTweetEntities(js)

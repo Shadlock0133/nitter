@@ -184,6 +184,7 @@ type
     gif*: Option[Gif]
     video*: Option[Video]
     photos*: seq[Photo]
+    possibly_sensitive*: bool
 
   Photo* = object
     url*: string
