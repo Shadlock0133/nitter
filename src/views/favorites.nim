@@ -11,17 +11,23 @@ proc getLatestTimestamp(timeline: Timeline): DateTime =
 
 type Favorite = (User, Option[DateTime])
 
+proc awaitAll[T](futs: seq[Future[T]]): Future[seq[T]] {.async.} =
+  let _ = futs.all.await
+  result = futs.mapIt(it.read)
+
+proc getFavorite(username: string, withTimestamp: bool): Future[Favorite] {.async.} =
+  let user = getCachedUser(username).await
+  let latest = if withTimestamp:
+    let timeline = getTimeline(user.id).await
+    timeline.getLatestTimestamp.some
+  else: none(DateTime)
+  result = (user, latest)
+
 proc getUsers*(prefs: Prefs): Future[seq[Favorite]] {.async.} =
-  result = collect:
-    for line in lines "favorites":
-      let
-        username = line
-        user = getCachedUser(username).await
-      let latest = if prefs.favoritesTimestamps:
-        let timeline = getTimeline(user.id).await
-        timeline.getLatestTimestamp.some
-      else: none(DateTime)
-      (user, latest)
+  let favorites = collect:
+    for username in lines "favorites":
+      getFavorite(username, prefs.favoritesTimestamps)
+  result = favorites.awaitAll.await
 
 proc renderFavorites*(users: seq[Favorite], prefs: Prefs): VNode =
   buildHtml(tdiv(class="panel-container")):
