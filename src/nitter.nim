@@ -60,8 +60,8 @@ settings:
 routes:
   get "/":
     # resp renderMain(renderSearch(), request, cfg, themePrefs())
-    let users = getUsers().await
-    let prefs = themePrefs()
+    let prefs = cookiePrefs()
+    let users = getUsers(prefs).await
     resp renderMain(renderFavorites(users, prefs), request, cfg, prefs)
 
   get "/about":

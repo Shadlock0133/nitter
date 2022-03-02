@@ -121,20 +121,23 @@ proc getJoinDate*(user: User): string =
 proc getJoinDateFull*(user: User): string =
   user.joinDate.format("h:mm tt - d MMM YYYY")
 
+proc getTime*(time: DateTime): string =
+  time.format("MMM d', 'YYYY' · 'h:mm tt' UTC'")
+
 proc getTime*(tweet: Tweet): string =
-  tweet.time.format("MMM d', 'YYYY' · 'h:mm tt' UTC'")
+  tweet.time.getTime
 
 proc getRfc822Time*(tweet: Tweet): string =
   tweet.time.format("ddd', 'dd MMM yyyy HH:mm:ss 'GMT'")
 
-proc getShortTime*(tweet: Tweet): string =
+proc getShortTime*(time: DateTime): string =
   let now = now()
-  let since = now - tweet.time
+  let since = now - time
 
-  if now.year != tweet.time.year:
-    result = tweet.time.format("d MMM yyyy")
+  if now.year != time.year:
+    result = time.format("d MMM yyyy")
   elif since.inDays >= 1:
-    result = tweet.time.format("MMM d")
+    result = time.format("MMM d")
   elif since.inHours >= 1:
     result = $since.inHours & "h"
   elif since.inMinutes >= 1:
@@ -143,6 +146,9 @@ proc getShortTime*(tweet: Tweet): string =
     result = $since.inSeconds & "s"
   else:
     result = "now"
+
+proc getShortTime*(tweet: Tweet): string =
+  tweet.time.getShortTime
 
 proc getLink*(tweet: Tweet; focus=true): string =
   if tweet.id == 0: return

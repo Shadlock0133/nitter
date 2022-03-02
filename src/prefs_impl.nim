@@ -78,6 +78,9 @@ genPrefs:
     squareAvatars(checkbox, false):
       "Square profile pictures"
 
+    favoritesTimestamps(checkbox, false):
+      "Show time of latest tweet in favorites"
+
   Media:
     mp4Playback(checkbox, true):
       "Enable mp4 video playback (only for gifs)"
