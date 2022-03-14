@@ -135,17 +135,17 @@ proc getShortTime*(time: DateTime): string =
   let since = now - time
 
   if now.year != time.year:
-    result = time.format("d MMM yyyy")
+    time.format("d MMM yyyy")
   elif since.inDays >= 1:
-    result = time.format("MMM d")
+    time.format("MMM d")
   elif since.inHours >= 1:
-    result = $since.inHours & "h"
+    $since.inHours & "h"
   elif since.inMinutes >= 1:
-    result = $since.inMinutes & "m"
+    $since.inMinutes & "m"
   elif since.inSeconds > 1:
-    result = $since.inSeconds & "s"
+    $since.inSeconds & "s"
   else:
-    result = "now"
+    "now"
 
 proc getShortTime*(tweet: Tweet): string =
   tweet.time.getShortTime
