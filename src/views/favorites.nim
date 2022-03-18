@@ -71,7 +71,7 @@ proc renderFavorites*(users: seq[Favorite], prefs: Prefs): VNode =
               of TimeScale.Years: "50%"
             let style: VStyle = style(
               color,
-              &"color-mix(in srgb, var(--accent) {amount}, black);"
+              &"color-mix(in srgb, var(--accent) {amount}, black)"
             )
             # Using `Option::isSome` and `Option::get`, because no native pattern matching
             a(style=style, title=latest.get.getTime, href= &"/{username}"):
