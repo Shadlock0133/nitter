@@ -41,8 +41,8 @@ proc renderHeader(tweet: Tweet; retweet: string; prefs: Prefs): VNode =
           linkUser(tweet.user, class="username")
 
         span(class="tweet-date"):
-          a(class="yakuu-tweet-redirect-link", href=getTwitterRedirectLink(tweet)):
-            text "t"
+          a(class="yakuu-tweet-redirect-link icon-bird",
+            href=getTwitterRedirectLink(tweet))
           a(href=getLink(tweet), title=tweet.getTime):
             text tweet.getShortTime
 
