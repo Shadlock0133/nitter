@@ -6,8 +6,10 @@ import karax/[karaxdsl, vdom, vstyles]
 from tweet import renderMiniAvatar
 import ".."/[api, formatters, redis_cache, types]
 
-proc getLatestTimestamp(timeline: Timeline): DateTime =
-  timeline.content.mapIt(it.time).max
+proc getLatestTimestamp(timeline: Timeline): Option[DateTime] =
+  if timeline.content.len == 0:
+    return none(DateTime)
+  timeline.content.mapIt(it.time).max.some
 
 type TimeScale = enum
   SubSec, Secs, Mins, Hours, Days, Years
@@ -39,7 +41,7 @@ proc getFavorite(username: string, withTimestamp: bool): Future[Favorite] {.asyn
   let user = getCachedUser(username).await
   let latest = if withTimestamp:
     let timeline = getTimeline(user.id).await
-    timeline.getLatestTimestamp.some
+    timeline.getLatestTimestamp
   else: none(DateTime)
   result = (user, latest)
 
@@ -57,6 +59,7 @@ proc renderFavorites*(users: seq[Favorite], prefs: Prefs): VNode =
           username = user.username
           fullname = user.fullname
         tdiv(class="user"):
+          # TODO: Mark protected accounts?
           a(href= &"/{username}"): renderMiniAvatar(user, prefs)
           a(class="fullname", href= &"/{username}"): text &"{fullname}"
           a(class="username", href= &"/{username}"): text &"@{username}"
