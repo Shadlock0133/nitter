@@ -4,7 +4,7 @@ import asyncdispatch, strformat, sequtils, times
 import karax/[karaxdsl, vdom, vstyles]
 
 from tweet import renderMiniAvatar
-import ".."/[api, formatters, redis_cache, types]
+import ".."/[api, formatters, redis_cache, types, views/renderutils]
 
 proc getLatestTimestamp(timeline: Timeline): Option[DateTime] =
   if timeline.content.len == 0:
@@ -59,10 +59,9 @@ proc renderFavorites*(users: seq[Favorite], prefs: Prefs): VNode =
           username = user.username
           fullname = user.fullname
         tdiv(class="user"):
-          # TODO: Mark protected accounts?
           a(href= &"/{username}"): renderMiniAvatar(user, prefs)
-          a(class="fullname", href= &"/{username}"): text &"{fullname}"
-          a(class="username", href= &"/{username}"): text &"@{username}"
+          linkUser(user, class="fullname")
+          linkUser(user, class="username")
           if latest.isSome:
             let (t, s) = latest.get.getShortTime
             let amount = case s:
