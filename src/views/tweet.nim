@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-import strutils, sequtils, strformat, options
+import strutils, sequtils, strformat, options, algorithm
 import karax/[karaxdsl, vdom, vstyles]
 from jester import Request
 
@@ -7,10 +7,13 @@ import renderutils
 import ".."/[types, utils, formatters]
 import general
 
+const
+  doctype = "<!DOCTYPE html>\n"
+
 proc getSmallPic(url: string): string =
   result = url
   if "?" notin url and not url.endsWith("placeholder.png"):
-    result &= ":small"
+    result &= "?name=small"
   result = getPicUrl(result)
 
 proc renderMiniAvatar(user: User; prefs: Prefs): VNode =
@@ -57,19 +60,22 @@ proc renderAlbum(tweet: Tweet): VNode =
           tdiv(class="attachment image"):
             let
               named = "name=" in photo
-              orig = if named: photo else: photo & "?name=orig"
+              orig = photo
               small = if named: photo else: photo & "?name=small"
-            a(href=getPicUrl(orig), class="still-image", target="_blank"):
+            a(href=getOrigPicUrl(orig), class="still-image", target="_blank"):
               genImg(small)
 
-proc isPlaybackEnabled(prefs: Prefs; video: Video): bool =
-  case video.playbackType
+proc isPlaybackEnabled(prefs: Prefs; playbackType: VideoType): bool =
+  case playbackType
   of mp4: prefs.mp4Playback
   of m3u8, vmap: prefs.hlsPlayback
 
-proc renderVideoDisabled(video: Video; path: string): VNode =
+proc hasMp4Url(video: Video): bool =
+  video.variants.anyIt(it.contentType == mp4)
+
+proc renderVideoDisabled(playbackType: VideoType; path: string): VNode =
   buildHtml(tdiv(class="video-overlay")):
-    case video.playbackType
+    case playbackType
     of mp4:
       p: text "mp4 playback disabled in preferences"
     of m3u8, vmap:
@@ -84,9 +90,11 @@ proc renderVideoUnavailable(video: Video): VNode =
       p: text "This media is unavailable"
 
 proc renderVideo*(video: Video; prefs: Prefs; path: string): VNode =
-  let container =
-    if video.description.len > 0 or video.title.len > 0: " card-container"
-    else: ""
+  let
+    container = if video.description.len == 0 and video.title.len == 0: ""
+                else: " card-container"
+    playbackType = if not prefs.proxyVideos and video.hasMp4Url: mp4
+                   else: video.playbackType
 
   buildHtml(tdiv(class="attachments card")):
     tdiv(class="gallery-video" & container):
@@ -95,13 +103,16 @@ proc renderVideo*(video: Video; prefs: Prefs; path: string): VNode =
         if not video.available:
           img(src=thumb)
           renderVideoUnavailable(video)
-        elif not prefs.isPlaybackEnabled(video):
+        elif not prefs.isPlaybackEnabled(playbackType):
           img(src=thumb)
-          renderVideoDisabled(video, path)
+          renderVideoDisabled(playbackType, path)
         else:
-          let vid = video.variants.filterIt(it.contentType == video.playbackType)
-          let source = getVidUrl(vid[0].url)
-          case video.playbackType
+          let
+            vars = video.variants.filterIt(it.contentType == playbackType)
+            vidUrl = vars.sortedByIt(it.resolution)[^1].url
+            source = if prefs.proxyVideos: getVidUrl(vidUrl)
+                     else: vidUrl
+          case playbackType
           of mp4:
             if prefs.muteVideos:
               video(poster=thumb, controls="", muted=""):
@@ -146,7 +157,7 @@ proc renderPoll(poll: Poll): VNode =
         span(class="poll-choice-value"): text percStr
         span(class="poll-choice-option"): text poll.options[i]
     span(class="poll-info"):
-      text insertSep($poll.votes, ',') & " votes • " & poll.status
+      text &"{insertSep($poll.votes, ',')} votes • {poll.status}"
 
 proc renderCardImage(card: Card): VNode =
   buildHtml(tdiv(class="card-image-container")):
@@ -344,7 +355,7 @@ proc renderTweet*(tweet: Tweet; prefs: Prefs; path: string; class=""; index=0;
         renderQuote(tweet.quote.get(), prefs, path)
 
       if mainTweet:
-        p(class="tweet-published"): text getTime(tweet)
+        p(class="tweet-published"): text &"{getTime(tweet)} · {tweet.source}"
 
       if tweet.mediaTags.len > 0:
         renderMediaTags(tweet.mediaTags)
@@ -356,7 +367,12 @@ proc renderTweet*(tweet: Tweet; prefs: Prefs; path: string; class=""; index=0;
         a(class="show-thread", href=("/i/status/" & $tweet.threadId)):
           text "Show this thread"
 
-proc renderTweetEmbed*(tweet: Tweet; path: string; prefs: Prefs; cfg: Config; req: Request): VNode =
-  buildHtml(tdiv(class="tweet-embed")):
+proc renderTweetEmbed*(tweet: Tweet; path: string; prefs: Prefs; cfg: Config; req: Request): string =
+  let node = buildHtml(html(lang="en")):
     renderHead(prefs, cfg, req)
-    renderTweet(tweet, prefs, path, mainTweet=true)
+
+    body:
+      tdiv(class="tweet-embed"):
+        renderTweet(tweet, prefs, path, mainTweet=true)
+
+  result = doctype & $node

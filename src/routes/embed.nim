@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-import asyncdispatch, strutils, options
+import asyncdispatch, strutils, strformat, options
 import jester, karax/vdom
 import ".."/[types, api]
 import ../views/[embed, tweet, general]
@@ -25,12 +25,12 @@ proc createEmbedRouter*(cfg: Config) =
       if convo == nil or convo.tweet == nil:
         resp Http404
 
-      resp $renderTweetEmbed(convo.tweet, path, prefs, cfg, request)
+      resp renderTweetEmbed(convo.tweet, path, prefs, cfg, request)
 
     get "/embed/Tweet.html":
       let id = @"id"
 
       if id.len > 0:
-        redirect("/i/status/" & id & "/embed")
+        redirect(&"/i/status/{id}/embed")
       else:
         resp Http404

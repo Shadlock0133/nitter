@@ -3,14 +3,18 @@ from parameterized import parameterized
 
 text = [
     ['elonmusk/status/1138136540096319488',
-     'Tesla Owners Online', '@Model3Owners',
+     'Trev Page', '@Model3Owners',
      """As of March 58.4% of new car sales in Norway are electric. 
 
 What are we doing wrong? reuters.com/article/us-norwa…"""],
 
-    ['nim_lang/status/924694255364341760',
-     'Hacker News', '@newsycombinator',
-     'Why Rust fails hard at scientific computing andre-ratsimbazafy.com/why-r…']
+    ['nim_lang/status/1491461266849808397#m',
+     'Nim language', '@nim_lang',
+     """What's better than Nim 1.6.0?
+
+Nim 1.6.2 :)
+
+nim-lang.org/blog/2021/12/17…"""]
 ]
 
 image = [

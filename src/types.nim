@@ -75,6 +75,7 @@ type
     contentType*: VideoType
     url*: string
     bitrate*: int
+    resolution*: int
 
   Video* = object
     durationMs*: int
@@ -174,6 +175,7 @@ type
     available*: bool
     tombstone*: string
     location*: string
+    source*: string
     stats*: TweetStats
     retweet*: Option[Tweet]
     attribution*: Option[User]

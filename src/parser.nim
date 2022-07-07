@@ -87,10 +87,15 @@ proc parseVideo(js: JsonNode): Video =
     result.description = description.getStr
 
   for v in js{"video_info", "variants"}:
+    let
+      contentType = parseEnum[VideoType](v{"content_type"}.getStr("summary"))
+      url = v{"url"}.getStr
+
     result.variants.add VideoVariant(
-      contentType: parseEnum[VideoType](v{"content_type"}.getStr("summary")),
+      contentType: contentType,
       bitrate: v{"bitrate"}.getInt,
-      url: v{"url"}.getStr
+      url: url,
+      resolution: if contentType == mp4: getMp4Resolution(url) else: 0
     )
 
 proc parsePromoVideo(js: JsonNode): Video =
@@ -189,6 +194,7 @@ proc parseTweet(js: JsonNode): Tweet =
     replyId: js{"in_reply_to_status_id_str"}.getId,
     text: js{"full_text"}.getStr,
     time: js{"created_at"}.getTime,
+    source: getSource(js),
     hasThread: js{"self_thread"}.notNull,
     available: true,
     user: User(id: js{"user_id_str"}.getStr),
